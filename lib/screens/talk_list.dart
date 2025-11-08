@@ -15,7 +15,15 @@ class _TalkListScreenState extends State<TalkListScreen> {
     return Scaffold(
       appBar: AppBar(title: const Text('トーク 一覧')),
       body: Column(
-        children: [TalkContainer(user: User(id: 1, name: 'masahiro'))],
+        children: [
+          TalkContainer(
+            user: User(
+              id: 1,
+              name: 'masahiro',
+              profileImageUrl: 'https://picsum.photos/id/237/100/100',
+            ),
+          ),
+        ],
       ),
     );
   }

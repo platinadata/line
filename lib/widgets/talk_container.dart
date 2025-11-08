@@ -12,7 +12,7 @@ class TalkContainer extends StatelessWidget {
       child: Center(
         child: Container(
           width: MediaQuery.of(context).size.width * 0.9,
-          height: MediaQuery.of(context).size.height * 0.08,
+          height: MediaQuery.of(context).size.height * 0.1,
           padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
           decoration: const BoxDecoration(
             color: Color(0xFFe6e6fa),
@@ -22,11 +22,33 @@ class TalkContainer extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.center,
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text(
-                user.name,
-                maxLines: 2,
-                overflow: TextOverflow.ellipsis,
-                style: const TextStyle(fontSize: 16, color: Colors.black),
+              Row(
+                children: [
+                  Column(
+                    children: [
+                      CircleAvatar(
+                        radius: 26,
+                        backgroundImage: NetworkImage(user.profileImageUrl),
+                      ),
+                    ],
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.only(left: 16.0),
+                    child: Column(
+                      children: [
+                        Text(
+                          user.name,
+                          maxLines: 2,
+                          overflow: TextOverflow.ellipsis,
+                          style: const TextStyle(
+                            fontSize: 16,
+                            color: Colors.black,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
               ),
             ],
           ),
