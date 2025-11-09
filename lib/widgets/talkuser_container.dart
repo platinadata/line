@@ -2,9 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:line/models/user.dart';
 import 'package:line/screens/talk_room.dart';
 
-class TalkContainer extends StatelessWidget {
-  const TalkContainer({super.key, required this.user});
+class TalkUserContainer extends StatelessWidget {
   final User user;
+  const TalkUserContainer({super.key, required this.user});
 
   @override
   Widget build(BuildContext context) {

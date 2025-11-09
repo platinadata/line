@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:line/models/user.dart';
-import 'package:line/widgets/talk_container.dart';
+import 'package:line/widgets/talkuser_container.dart';
 
 class TalkListScreen extends StatefulWidget {
   const TalkListScreen({super.key});
@@ -16,7 +16,7 @@ class _TalkListScreenState extends State<TalkListScreen> {
       appBar: AppBar(title: const Text('トーク 一覧')),
       body: Column(
         children: [
-          TalkContainer(
+          TalkUserContainer(
             user: User(
               id: 1,
               name: 'masahiro',
