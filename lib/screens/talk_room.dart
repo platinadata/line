@@ -19,13 +19,31 @@ class _TalkRoomScreenState extends State<TalkRoomScreen> {
       body: Column(
         children: [
           MessageContainer(
-            message: Message(id: 1, idMatching: 1, word: 'おはようございます'),
+            message: Message(
+              id: 1,
+              idMatching: 1,
+              idUserTo: 1,
+              idUserFrom: 2,
+              word: 'おはようございます',
+            ),
           ),
           MessageContainer(
-            message: Message(id: 1, idMatching: 1, word: 'こんにちは'),
+            message: Message(
+              id: 1,
+              idMatching: 1,
+              idUserTo: 2,
+              idUserFrom: 1,
+              word: 'こんにちは',
+            ),
           ),
           MessageContainer(
-            message: Message(id: 1, idMatching: 1, word: 'こんばんは'),
+            message: Message(
+              id: 1,
+              idMatching: 1,
+              idUserTo: 1,
+              idUserFrom: 2,
+              word: 'こんばんは',
+            ),
           ),
         ],
       ),

@@ -10,7 +10,9 @@ class MessageContainer extends StatelessWidget {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 12),
       child: Align(
-        alignment: Alignment.centerLeft,
+        alignment: message.idUserFrom == 1
+            ? Alignment.centerRight
+            : Alignment.centerLeft,
         child: Container(
           height: MediaQuery.of(context).size.height * 0.06,
           padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 24),
