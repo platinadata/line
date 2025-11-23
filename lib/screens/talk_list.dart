@@ -21,7 +21,10 @@ class _TalkListScreenState extends State<TalkListScreen> {
   }
 
   Future<void> _loadUser() async {
-    final snapshot = await FirebaseFirestore.instance.collection('users').get();
+    final snapshot = await FirebaseFirestore.instance
+        .collection('users')
+        .where(FieldPath.documentId, isNotEqualTo: 'user1')
+        .get();
     final usersWk = snapshot.docs.map((doc) {
       final data = doc.data();
       return User(
@@ -42,7 +45,7 @@ class _TalkListScreenState extends State<TalkListScreen> {
     final users = _users;
     return Scaffold(
       appBar: AppBar(title: const Text('トーク 一覧')),
-      body: Column(
+      body: ListView(
         children: [
           ..._users.map((user) {
             return TalkUserContainer(user: user);
