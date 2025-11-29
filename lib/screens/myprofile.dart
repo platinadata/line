@@ -28,14 +28,16 @@ class _MyProfileScreenState extends State<MyProfileScreen> {
         .get();
 
     final data = doc.data() as Map<String, dynamic>;
+    final myWk = User(
+      id: data['id'],
+      name: data['name'],
+      mail: data['mail'],
+      profileImageUrl:
+          data['profileImageUrl'] ?? 'https://picsum.photos/id/237/100/100',
+    );
 
     setState(() {
-      _my = User(
-        id: data['id'],
-        name: data['name'],
-        profileImageUrl:
-            data['profileImageUrl'] ?? 'https://picsum.photos/id/237/100/100',
-      );
+      _my = myWk;
     });
   }
 
@@ -47,7 +49,6 @@ class _MyProfileScreenState extends State<MyProfileScreen> {
         body: Center(child: CircularProgressIndicator()),
       );
     }
-    final my = _my!;
     return Scaffold(
       appBar: AppBar(title: const Text('ホーム')),
       body: ListView(
@@ -65,7 +66,9 @@ class _MyProfileScreenState extends State<MyProfileScreen> {
               ),
             ),
           ),
-          Column(children: [MyprofileContainer(my: my)]),
+          Column(
+            children: [MyprofileContainer(my: _my!, users: widget.users)],
+          ),
           Center(
             child: Padding(
               padding: const EdgeInsets.all(8.0),

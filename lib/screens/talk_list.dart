@@ -42,7 +42,6 @@ class _TalkListScreenState extends State<TalkListScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final users = _users;
     return Scaffold(
       appBar: AppBar(title: const Text('トーク 一覧')),
       body: ListView(
@@ -56,7 +55,7 @@ class _TalkListScreenState extends State<TalkListScreen> {
               onPressed: () {
                 Navigator.of(context).push(
                   MaterialPageRoute(
-                    builder: (context) => MyProfileScreen(users: users),
+                    builder: (context) => MyProfileScreen(users: _users),
                   ),
                 );
               },

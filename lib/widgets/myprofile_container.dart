@@ -1,10 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:line/models/user.dart';
-import 'package:line/screens/talk_room.dart';
+import 'package:line/screens/myprofile_edit.dart';
 
 class MyprofileContainer extends StatelessWidget {
   final User my;
-  const MyprofileContainer({super.key, required this.my});
+  final List<User> users;
+  const MyprofileContainer({super.key, required this.my, required this.users});
 
   @override
   Widget build(BuildContext context) {
@@ -13,7 +14,9 @@ class MyprofileContainer extends StatelessWidget {
       child: GestureDetector(
         onTap: () {
           Navigator.of(context).push(
-            MaterialPageRoute(builder: ((context) => TalkRoomScreen(user: my))),
+            MaterialPageRoute(
+              builder: ((context) => MyProfileEdit(my: my, users: users)),
+            ),
           );
         },
         child: Center(
