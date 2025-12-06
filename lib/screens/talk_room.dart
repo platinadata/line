@@ -1,3 +1,4 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:line/models/message.dart';
 import 'package:line/models/user.dart';
@@ -12,37 +13,98 @@ class TalkRoomScreen extends StatefulWidget {
 }
 
 class _TalkRoomScreenState extends State<TalkRoomScreen> {
+  final TextEditingController _textController = TextEditingController();
+
+  @override
+  void dispose() {
+    _textController.dispose();
+    super.dispose();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(title: Text(widget.user.name + 'さんとのトークルーム')),
       body: Column(
         children: [
-          MessageContainer(
-            message: Message(
-              id: 1,
-              idMatching: 1,
-              idUserTo: 1,
-              idUserFrom: 2,
-              word: 'おはようございます',
+          Expanded(
+            child: StreamBuilder<QuerySnapshot>(
+              stream: FirebaseFirestore.instance
+                  .collection('messages')
+                  .orderBy('id')
+                  .snapshots(),
+              builder: (context, snapshot) {
+                if (!snapshot.hasData) {
+                  return const Center(child: CircularProgressIndicator());
+                }
+                final docs = snapshot.data!.docs;
+                return ListView(
+                  children: docs.map((doc) {
+                    final data = doc.data() as Map<String, dynamic>;
+                    return MessageContainer(
+                      message: Message(
+                        id: data['id'],
+                        idMatching: data['idMatching'],
+                        from: data['from'],
+                        to: data['to'],
+                        message: data['message'],
+                      ),
+                    );
+                  }).toList(),
+                );
+              },
             ),
           ),
-          MessageContainer(
-            message: Message(
-              id: 1,
-              idMatching: 1,
-              idUserTo: 2,
-              idUserFrom: 1,
-              word: 'こんにちは',
-            ),
-          ),
-          MessageContainer(
-            message: Message(
-              id: 1,
-              idMatching: 1,
-              idUserTo: 1,
-              idUserFrom: 2,
-              word: 'こんばんは',
+          const Spacer(),
+          FractionallySizedBox(
+            widthFactor: 0.8,
+            child: Row(
+              children: [
+                Expanded(
+                  child: TextField(
+                    controller: _textController,
+                    style: const TextStyle(color: Colors.black),
+                    decoration: const InputDecoration(hintText: 'メッセージを入力'),
+                  ),
+                ),
+                const SizedBox(width: 16),
+                ElevatedButton(
+                  onPressed: () async {
+                    final text = _textController.text;
+                    if (text.isEmpty) return;
+
+                    final collection = FirebaseFirestore.instance.collection(
+                      'messages',
+                    );
+
+                    // idの最大値を取得
+                    final snapshot = await collection
+                        .orderBy('id', descending: true)
+                        .limit(1)
+                        .get();
+
+                    int nextId = 1;
+
+                    if (snapshot.docs.isNotEmpty) {
+                      final lastId = snapshot.docs.first.data()['id'] as int;
+                      nextId = lastId + 1;
+                    }
+
+                    final docId = 'message$nextId';
+
+                    await collection.doc(docId).set({
+                      'id': nextId,
+                      'idMatching': 12,
+                      'from': 1,
+                      'to': widget.user.id,
+                      'message': text,
+                    });
+
+                    _textController.clear();
+                  },
+                  child: const Text('送信'),
+                ),
+              ],
             ),
           ),
         ],

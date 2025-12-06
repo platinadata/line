@@ -3,15 +3,15 @@ class Message {
   Message({
     required this.id,
     required this.idMatching,
-    required this.word,
-    required this.idUserTo,
-    required this.idUserFrom,
+    required this.from,
+    required this.to,
+    required this.message,
   });
 
   // プロパティ
   final int id;
   final int idMatching;
-  final int idUserTo;
-  final int idUserFrom;
-  final String word;
+  final int from;
+  final int to;
+  final String message;
 }

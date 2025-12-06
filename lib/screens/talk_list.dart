@@ -17,10 +17,10 @@ class _TalkListScreenState extends State<TalkListScreen> {
   @override
   void initState() {
     super.initState();
-    _loadUser();
+    _loadUsers();
   }
 
-  Future<void> _loadUser() async {
+  Future<void> _loadUsers() async {
     final snapshot = await FirebaseFirestore.instance
         .collection('users')
         .where(FieldPath.documentId, isNotEqualTo: 'user1')

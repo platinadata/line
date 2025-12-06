@@ -10,11 +10,10 @@ class MessageContainer extends StatelessWidget {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 12),
       child: Align(
-        alignment: message.idUserFrom == 1
+        alignment: message.from == 1
             ? Alignment.centerRight
             : Alignment.centerLeft,
         child: Container(
-          height: MediaQuery.of(context).size.height * 0.06,
           padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 24),
           decoration: const BoxDecoration(
             color: Color(0xFFe6e6fa),
@@ -25,7 +24,7 @@ class MessageContainer extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text(
-                message.word,
+                message.message,
                 maxLines: 2,
                 overflow: TextOverflow.ellipsis,
                 style: const TextStyle(fontSize: 12, color: Colors.black),
