@@ -23,6 +23,7 @@ class _TalkRoomScreenState extends State<TalkRoomScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final idMatchingValue = int.parse('1${widget.user.id}');
     return Scaffold(
       appBar: AppBar(title: Text(widget.user.name + 'さんとのトークルーム')),
       body: Column(
@@ -31,6 +32,7 @@ class _TalkRoomScreenState extends State<TalkRoomScreen> {
             child: StreamBuilder<QuerySnapshot>(
               stream: FirebaseFirestore.instance
                   .collection('messages')
+                  .where('idMatching', isEqualTo: idMatchingValue)
                   .orderBy('id')
                   .snapshots(),
               builder: (context, snapshot) {
