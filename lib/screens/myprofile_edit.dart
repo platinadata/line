@@ -4,8 +4,7 @@ import 'package:line/models/user.dart';
 
 class MyProfileEdit extends StatefulWidget {
   final User my;
-  final List<User> users;
-  const MyProfileEdit({super.key, required this.my, required this.users});
+  const MyProfileEdit({super.key, required this.my});
 
   @override
   State<MyProfileEdit> createState() => _MyProfileEditScreenState();

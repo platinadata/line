@@ -9,7 +9,7 @@ class TalkUserContainer extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 16),
+      padding: const EdgeInsets.only(bottom: 16, left: 16, right: 16),
       child: GestureDetector(
         onTap: () {
           Navigator.of(context).push(
@@ -20,8 +20,6 @@ class TalkUserContainer extends StatelessWidget {
         },
         child: Center(
           child: Container(
-            width: MediaQuery.of(context).size.width * 0.9,
-            height: MediaQuery.of(context).size.height * 0.1,
             padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
             decoration: const BoxDecoration(
               color: Color(0xFFe6e6fa),
