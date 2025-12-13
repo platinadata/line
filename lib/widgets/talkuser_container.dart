@@ -49,10 +49,7 @@ class TalkUserContainer extends StatelessWidget {
                             user.name,
                             maxLines: 2,
                             overflow: TextOverflow.ellipsis,
-                            style: const TextStyle(
-                              fontSize: 16,
-                              color: Colors.black,
-                            ),
+                            style: const TextStyle(fontSize: 16),
                           ),
                         ],
                       ),

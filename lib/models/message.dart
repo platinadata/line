@@ -2,7 +2,7 @@ class Message {
   // コンストラクタ
   Message({
     required this.id,
-    required this.idMatching,
+    required this.roomId,
     required this.from,
     required this.to,
     required this.message,
@@ -10,7 +10,7 @@ class Message {
 
   // プロパティ
   final int id;
-  final int idMatching;
+  final String roomId;
   final int from;
   final int to;
   final String message;

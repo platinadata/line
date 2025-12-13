@@ -43,10 +43,7 @@ class MyprofileContainer extends StatelessWidget {
                             my.name,
                             maxLines: 2,
                             overflow: TextOverflow.ellipsis,
-                            style: const TextStyle(
-                              fontSize: 20,
-                              color: Colors.black,
-                            ),
+                            style: const TextStyle(fontSize: 20),
                           ),
                         ],
                       ),

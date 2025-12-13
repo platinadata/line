@@ -1,7 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:line/models/user.dart';
-import 'package:line/screens/myprofile.dart';
 import 'package:line/widgets/talkuser_container.dart';
 
 class TalkListScreen extends StatefulWidget {
@@ -49,22 +48,6 @@ class _TalkListScreenState extends State<TalkListScreen> {
           ..._users.map((user) {
             return TalkUserContainer(user: user);
           }),
-          Padding(
-            padding: const EdgeInsets.all(8.0),
-            child: TextButton(
-              onPressed: () {
-                Navigator.of(context).push(
-                  MaterialPageRoute(
-                    builder: (context) => MyProfileScreen(users: _users),
-                  ),
-                );
-              },
-              child: const Text(
-                '私のプロフィールを見る',
-                style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
-              ),
-            ),
-          ),
         ],
       ),
     );

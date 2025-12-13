@@ -58,11 +58,7 @@ class _MyProfileScreenState extends State<MyProfileScreen> {
               padding: const EdgeInsets.all(8.0),
               child: Text(
                 '私のプロフィール',
-                style: TextStyle(
-                  fontSize: 18,
-                  fontWeight: FontWeight.bold,
-                  color: Colors.black,
-                ),
+                style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
               ),
             ),
           ),
@@ -74,11 +70,7 @@ class _MyProfileScreenState extends State<MyProfileScreen> {
               padding: const EdgeInsets.all(8.0),
               child: Text(
                 '友達一覧（${widget.users.length}）',
-                style: TextStyle(
-                  fontSize: 16,
-                  fontWeight: FontWeight.bold,
-                  color: Colors.black,
-                ),
+                style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
               ),
             ),
           ),

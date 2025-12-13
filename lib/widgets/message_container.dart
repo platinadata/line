@@ -23,12 +23,7 @@ class MessageContainer extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.center,
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text(
-                message.message,
-                maxLines: 2,
-                overflow: TextOverflow.ellipsis,
-                style: const TextStyle(fontSize: 12, color: Colors.black),
-              ),
+              Text(message.message, style: const TextStyle(fontSize: 12)),
             ],
           ),
         ),

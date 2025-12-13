@@ -1,7 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:line/models/user.dart';
-import 'package:line/screens/myprofile.dart';
 
 class MyProfileEdit extends StatefulWidget {
   final User my;
@@ -33,7 +32,7 @@ class _MyProfileEditScreenState extends State<MyProfileEdit> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('私のプロフィールを編集')),
+      appBar: AppBar(title: const Text('プロフィールを編集')),
       body: Padding(
         padding: const EdgeInsets.only(top: 40),
         child: Center(
@@ -43,12 +42,10 @@ class _MyProfileEditScreenState extends State<MyProfileEdit> {
               children: [
                 TextField(
                   controller: _nameController,
-                  style: const TextStyle(color: Colors.black),
                   decoration: InputDecoration(hintText: '氏名'),
                 ),
                 TextField(
                   controller: _mailController,
-                  style: const TextStyle(color: Colors.black),
                   decoration: InputDecoration(hintText: 'メールアドレス'),
                 ),
                 const SizedBox(height: 32),
@@ -62,12 +59,9 @@ class _MyProfileEditScreenState extends State<MyProfileEdit> {
                           'mail': _mailController.text,
                         });
 
-                    Navigator.of(context).pushReplacement(
-                      MaterialPageRoute(
-                        builder: (context) =>
-                            MyProfileScreen(users: widget.users),
-                      ),
-                    );
+                    Navigator.of(
+                      context,
+                    ).pushNamedAndRemoveUntil('/', (route) => false);
                   },
                   child: Text('更新'),
                 ),

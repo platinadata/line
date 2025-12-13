@@ -2,6 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:line/models/message.dart';
 import 'package:line/models/user.dart';
+import 'package:line/utils/room_id.dart';
 import 'package:line/widgets/message_container.dart';
 
 class TalkRoomScreen extends StatefulWidget {
@@ -13,7 +14,14 @@ class TalkRoomScreen extends StatefulWidget {
 }
 
 class _TalkRoomScreenState extends State<TalkRoomScreen> {
+  late final String _roomId;
   final TextEditingController _textController = TextEditingController();
+
+  @override
+  void initState() {
+    super.initState();
+    _roomId = buildRoomId(1, widget.user.id);
+  }
 
   @override
   void dispose() {
@@ -23,7 +31,6 @@ class _TalkRoomScreenState extends State<TalkRoomScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final idMatchingValue = int.parse('1${widget.user.id}');
     return Scaffold(
       appBar: AppBar(title: Text(widget.user.name + 'さんとのトークルーム')),
       body: Column(
@@ -32,7 +39,7 @@ class _TalkRoomScreenState extends State<TalkRoomScreen> {
             child: StreamBuilder<QuerySnapshot>(
               stream: FirebaseFirestore.instance
                   .collection('messages')
-                  .where('idMatching', isEqualTo: idMatchingValue)
+                  .where('roomId', isEqualTo: _roomId)
                   .orderBy('id')
                   .snapshots(),
               builder: (context, snapshot) {
@@ -46,7 +53,7 @@ class _TalkRoomScreenState extends State<TalkRoomScreen> {
                     return MessageContainer(
                       message: Message(
                         id: data['id'],
-                        idMatching: data['idMatching'],
+                        roomId: data['roomId'],
                         from: data['from'],
                         to: data['to'],
                         message: data['message'],
@@ -65,7 +72,6 @@ class _TalkRoomScreenState extends State<TalkRoomScreen> {
                 Expanded(
                   child: TextField(
                     controller: _textController,
-                    style: const TextStyle(color: Colors.black),
                     decoration: const InputDecoration(hintText: 'メッセージを入力'),
                   ),
                 ),
@@ -96,7 +102,7 @@ class _TalkRoomScreenState extends State<TalkRoomScreen> {
 
                     await collection.doc(docId).set({
                       'id': nextId,
-                      'idMatching': 12,
+                      'roomId': _roomId,
                       'from': 1,
                       'to': widget.user.id,
                       'message': text,
