@@ -91,7 +91,7 @@ class _BottomNavigationState extends State<BottomNavigation> {
 
     final screens = [
       MyProfileScreen(my: _my!, users: _users),
-      TalkListScreen(),
+      TalkListScreen(users: _users),
       MyProfileEdit(my: _my!),
     ];
     return Scaffold(
