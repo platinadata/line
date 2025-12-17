@@ -32,7 +32,7 @@ class _TalkRoomScreenState extends State<TalkRoomScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text(widget.user.name + 'さんとのトークルーム')),
+      appBar: AppBar(title: Text('${widget.user.name}さんとのトークルーム')),
       body: Column(
         children: [
           Expanded(
@@ -40,7 +40,7 @@ class _TalkRoomScreenState extends State<TalkRoomScreen> {
               stream: FirebaseFirestore.instance
                   .collection('messages')
                   .where('roomId', isEqualTo: _roomId)
-                  .orderBy('id')
+                  .orderBy('createdAt')
                   .snapshots(),
               builder: (context, snapshot) {
                 if (!snapshot.hasData) {
@@ -57,6 +57,7 @@ class _TalkRoomScreenState extends State<TalkRoomScreen> {
                         from: data['from'],
                         to: data['to'],
                         message: data['message'],
+                        createdAt: data['createdAt'],
                       ),
                     );
                   }).toList(),
@@ -84,28 +85,15 @@ class _TalkRoomScreenState extends State<TalkRoomScreen> {
                     final collection = FirebaseFirestore.instance.collection(
                       'messages',
                     );
+                    final docRef = collection.doc();
 
-                    // idの最大値を取得
-                    final snapshot = await collection
-                        .orderBy('id', descending: true)
-                        .limit(1)
-                        .get();
-
-                    int nextId = 1;
-
-                    if (snapshot.docs.isNotEmpty) {
-                      final lastId = snapshot.docs.first.data()['id'] as int;
-                      nextId = lastId + 1;
-                    }
-
-                    final docId = 'message$nextId';
-
-                    await collection.doc(docId).set({
-                      'id': nextId,
+                    await docRef.set({
+                      'id': docRef.id,
                       'roomId': _roomId,
                       'from': 1,
                       'to': widget.user.id,
                       'message': text,
+                      'createdAt': Timestamp.now(),
                     });
 
                     _textController.clear();

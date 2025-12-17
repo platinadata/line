@@ -1,3 +1,5 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
+
 class Message {
   // コンストラクタ
   Message({
@@ -6,12 +8,14 @@ class Message {
     required this.from,
     required this.to,
     required this.message,
+    required this.createdAt,
   });
 
   // プロパティ
-  final int id;
+  final String id;
   final String roomId;
   final int from;
   final int to;
   final String message;
+  final Timestamp createdAt;
 }
