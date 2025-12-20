@@ -18,7 +18,6 @@ class MyprofileContainer extends StatelessWidget {
         child: Container(
           padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
           decoration: const BoxDecoration(
-            color: Color.fromARGB(255, 221, 236, 255),
             borderRadius: BorderRadius.all(Radius.circular(8)),
           ),
           child: Column(
@@ -30,7 +29,13 @@ class MyprofileContainer extends StatelessWidget {
                 children: [
                   Column(
                     children: [
-                      Text(my.name, style: const TextStyle(fontSize: 20)),
+                      Text(
+                        my.name,
+                        style: const TextStyle(
+                          fontSize: 20,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
                     ],
                   ),
                   Column(

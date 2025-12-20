@@ -32,7 +32,7 @@ class _TalkRoomScreenState extends State<TalkRoomScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text('${widget.user.name}さんとのトークルーム')),
+      appBar: AppBar(title: Text(widget.user.name)),
       body: Column(
         children: [
           Expanded(
@@ -103,6 +103,7 @@ class _TalkRoomScreenState extends State<TalkRoomScreen> {
               ],
             ),
           ),
+          SizedBox(height: 40),
         ],
       ),
     );

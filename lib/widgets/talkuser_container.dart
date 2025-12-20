@@ -9,7 +9,7 @@ class TalkUserContainer extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.only(bottom: 16, left: 16, right: 16),
+      padding: const EdgeInsets.only(bottom: 24, left: 16, right: 16),
       child: GestureDetector(
         onTap: () {
           Navigator.of(context).push(
@@ -20,9 +20,7 @@ class TalkUserContainer extends StatelessWidget {
         },
         child: Center(
           child: Container(
-            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
             decoration: const BoxDecoration(
-              color: Color(0xFFe6e6fa),
               borderRadius: BorderRadius.all(Radius.circular(8)),
             ),
             child: Column(
@@ -34,7 +32,7 @@ class TalkUserContainer extends StatelessWidget {
                     Column(
                       children: [
                         CircleAvatar(
-                          radius: 26,
+                          radius: 24,
                           backgroundImage: NetworkImage(user.profileImageUrl),
                         ),
                       ],

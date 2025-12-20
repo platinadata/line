@@ -83,39 +83,36 @@ class _BottomNavigationState extends State<BottomNavigation> {
 
   int _selectedIndex = 0;
 
+  void _onItemTapped(int index) {
+    setState(() {
+      _selectedIndex = index;
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
-    if (_my == null) {
-      return const Scaffold(body: Center(child: CircularProgressIndicator()));
-    }
-
     final screens = [
       MyProfileScreen(my: _my!, users: _users),
       TalkListScreen(users: _users),
       MyProfileEdit(my: _my!),
     ];
+
+    if (_my == null) {
+      return const Scaffold(body: Center(child: CircularProgressIndicator()));
+    }
+
     return Scaffold(
       body: screens[_selectedIndex],
-      bottomNavigationBar: NavigationBar(
-        // タップされたタブのインデックスを設定
-        onDestinationSelected: (int index) {
-          setState(() {
-            _selectedIndex = index;
-          });
-        },
-        indicatorColor: Colors.amber,
-        // 選択されたタブの設定（設定しないと画面は切り替わってもタブの色は変わらない）
-        selectedIndex: _selectedIndex,
-        // タブ自体の設定（必須項目のため、書かないとエラーになる）
-        destinations: const <Widget>[
-          NavigationDestination(
-            selectedIcon: Icon(Icons.home),
-            icon: Icon(Icons.home_outlined),
-            label: 'Home',
-          ),
-          NavigationDestination(icon: Icon(Icons.map), label: 'Talk'),
-          NavigationDestination(icon: Icon(Icons.settings), label: 'Settings'),
+      bottomNavigationBar: BottomNavigationBar(
+        currentIndex: _selectedIndex,
+        onTap: _onItemTapped,
+        items: const <BottomNavigationBarItem>[
+          BottomNavigationBarItem(icon: Icon(Icons.home), label: 'ホーム'),
+          BottomNavigationBarItem(icon: Icon(Icons.chat), label: 'トーク'),
+          BottomNavigationBarItem(icon: Icon(Icons.settings), label: '設定'),
         ],
+        type: BottomNavigationBarType.fixed,
+        selectedItemColor: Colors.blue,
       ),
     );
   }
