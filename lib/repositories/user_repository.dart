@@ -6,16 +6,19 @@ class UserRepository {
   final FirebaseFirestore _db;
 
   // 自分自身の情報を取得
-  Future<User> fetchMyUser(String myId) async {
-    final mySnap = await _db.collection('users').doc(myId).get();
-    return User.fromMap(mySnap.data() ?? const {});
+  Future<User> fetchMyUser(String myLoginId) async {
+    final mySnap = await _db
+        .collection('users')
+        .where('loginId', isEqualTo: myLoginId)
+        .get();
+    return User.fromMap(mySnap.docs.first.data());
   }
 
   // 友だちの情報を取得
-  Future<List<User>> fetchFriendsUsers(String myId) async {
+  Future<List<User>> fetchFriendsUsers(String myLoginId) async {
     final friendsSnap = await _db
         .collection('users')
-        .where(FieldPath.documentId, isNotEqualTo: myId)
+        .where('loginId', isNotEqualTo: myLoginId)
         .get();
     return friendsSnap.docs.map((doc) => User.fromMap(doc.data())).toList();
   }

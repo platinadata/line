@@ -52,13 +52,13 @@ class _AppHomePageState extends State<AppHomePage> {
   }
 
   Future<void> _loadUsers() async {
-    const myId = 'user1';
+    const myLoginId = 'masahiro.517';
 
     // 自分自身の情報を取得
-    final my = await _userRepo.fetchMyUser(myId);
+    final my = await _userRepo.fetchMyUser(myLoginId);
 
     // 友だちの情報を取得
-    final friends = await _userRepo.fetchFriendsUsers(myId);
+    final friends = await _userRepo.fetchFriendsUsers(myLoginId);
 
     setState(() {
       _my = my;

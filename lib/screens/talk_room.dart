@@ -40,6 +40,7 @@ class _TalkRoomScreenState extends State<TalkRoomScreen> {
       appBar: AppBar(title: Text(widget.user.name)),
       body: Column(
         children: [
+          // メッセージ表示エリア
           Expanded(
             child: StreamBuilder<List<Message>>(
               stream: _messageRepo.fetchMessages(_roomId),
@@ -59,6 +60,7 @@ class _TalkRoomScreenState extends State<TalkRoomScreen> {
               },
             ),
           ),
+          // メッセージを入力＆送信エリア
           FractionallySizedBox(
             widthFactor: 0.8,
             child: Row(

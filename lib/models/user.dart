@@ -1,6 +1,7 @@
 class User {
   // プロパティ
   final int id;
+  final String loginId;
   final String name;
   final String? mail;
   final String profileImageUrl;
@@ -8,6 +9,7 @@ class User {
   // コンストラクタ
   const User({
     required this.id,
+    required this.loginId,
     required this.name,
     this.mail,
     required this.profileImageUrl,
@@ -18,6 +20,7 @@ class User {
   factory User.fromMap(Map<String, dynamic> map) {
     return User(
       id: map['id'] as int,
+      loginId: map['loginId'] as String,
       name: map['name'] as String,
       mail: map['mail'] as String?,
       profileImageUrl: (map['profileImageUrl'] as String?) ?? _defaultIcon,
