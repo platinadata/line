@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:line/models/user.dart';
+import 'package:line/repositories/user_repository.dart';
 import 'package:line/screens/myprofile.dart';
 import 'package:line/screens/myprofile_edit.dart';
 import 'package:line/screens/talk_list.dart';
@@ -24,65 +25,48 @@ class MyApp extends StatelessWidget {
         ),
         textTheme: Theme.of(context).textTheme.apply(bodyColor: Colors.black),
       ),
-      home: const BottomNavigation(),
+      home: const AppHomePage(),
     );
   }
 }
 
-class BottomNavigation extends StatefulWidget {
-  const BottomNavigation({super.key});
+class AppHomePage extends StatefulWidget {
+  const AppHomePage({super.key});
 
   @override
-  State<BottomNavigation> createState() => _BottomNavigationState();
+  State<AppHomePage> createState() => _AppHomePageState();
 }
 
-class _BottomNavigationState extends State<BottomNavigation> {
+class _AppHomePageState extends State<AppHomePage> {
   User? _my;
-  List<User> _users = [];
+  List<User> _friends = [];
+  late final FirebaseFirestore _db;
+  late final UserRepository _userRepo;
 
   @override
   void initState() {
     super.initState();
+    _db = FirebaseFirestore.instance;
+    _userRepo = UserRepository(_db);
     _loadUsers();
   }
 
   Future<void> _loadUsers() async {
-    final doc = await FirebaseFirestore.instance
-        .collection('users')
-        .doc('user1')
-        .get();
+    const myId = 'user1';
 
-    final data = doc.data() as Map<String, dynamic>;
-    final myWk = User(
-      id: data['id'],
-      name: data['name'],
-      mail: data['mail'],
-      profileImageUrl:
-          data['profileImageUrl'] ?? 'https://picsum.photos/id/237/100/100',
-    );
+    // 自分自身の情報を取得
+    final my = await _userRepo.fetchMyUser(myId);
 
-    final snapshot = await FirebaseFirestore.instance
-        .collection('users')
-        .where(FieldPath.documentId, isNotEqualTo: 'user1')
-        .get();
-    final usersWk = snapshot.docs.map((doc) {
-      final data = doc.data();
-      return User(
-        id: data['id'],
-        name: data['name'],
-        profileImageUrl:
-            data['profileImageUrl'] ?? 'https://picsum.photos/id/237/100/100',
-      );
-    }).toList();
+    // 友だちの情報を取得
+    final friends = await _userRepo.fetchFriendsUsers(myId);
 
     setState(() {
-      _my = myWk;
-      _users = usersWk;
+      _my = my;
+      _friends = friends;
     });
   }
 
   int _selectedIndex = 0;
-
   void _onItemTapped(int index) {
     setState(() {
       _selectedIndex = index;
@@ -91,15 +75,15 @@ class _BottomNavigationState extends State<BottomNavigation> {
 
   @override
   Widget build(BuildContext context) {
-    final screens = [
-      MyProfileScreen(my: _my!, users: _users),
-      TalkListScreen(users: _users),
-      MyProfileEdit(my: _my!),
-    ];
-
     if (_my == null) {
       return const Scaffold(body: Center(child: CircularProgressIndicator()));
     }
+
+    final screens = [
+      MyProfileScreen(my: _my!, users: _friends),
+      TalkListScreen(users: _friends),
+      MyProfileEdit(my: _my!),
+    ];
 
     return Scaffold(
       body: screens[_selectedIndex],
