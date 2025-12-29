@@ -3,7 +3,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 class Message {
   // プロパティ
   final String id;
-  final String roomId;
+  final String idMatching;
   final int from;
   final int to;
   final String message;
@@ -12,7 +12,7 @@ class Message {
   // コンストラクタ
   const Message({
     required this.id,
-    required this.roomId,
+    required this.idMatching,
     required this.from,
     required this.to,
     required this.message,
@@ -22,7 +22,7 @@ class Message {
   factory Message.fromMap(Map<String, dynamic> map) {
     return Message(
       id: map['id'] as String,
-      roomId: map['roomId'] as String,
+      idMatching: map['idMatching'] as String,
       from: map['from'] as int,
       to: map['to'] as int,
       message: map['message'] as String,

@@ -58,7 +58,7 @@ class _AppHomePageState extends State<AppHomePage> {
     final my = await _userRepo.fetchMyUser(myLoginId);
 
     // 友だちの情報を取得
-    final friends = await _userRepo.fetchFriendsUsers(myLoginId);
+    final friends = await _userRepo.fetchFriendsUsers(my.id);
 
     setState(() {
       _my = my;

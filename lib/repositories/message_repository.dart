@@ -6,10 +6,10 @@ class MessageRepository {
   MessageRepository(this._db);
 
   // メッセージを取得
-  Stream<List<Message>> fetchMessages(String roomId) {
+  Stream<List<Message>> fetchMessages(String idMatching) {
     return _db
         .collection('messages')
-        .where('roomId', isEqualTo: roomId)
+        .where('idMatching', isEqualTo: idMatching)
         .orderBy('createdAt', descending: true)
         .snapshots()
         .map(
@@ -20,7 +20,7 @@ class MessageRepository {
 
   // メッセージを送信
   Future<void> sendMessage({
-    required String roomId,
+    required String idMatching,
     required int fromUserId,
     required int toUserId,
     required String text,
@@ -28,7 +28,7 @@ class MessageRepository {
     final docRef = _db.collection('messages').doc();
     await docRef.set({
       'id': docRef.id,
-      'roomId': roomId,
+      'idMatching': idMatching,
       'from': fromUserId,
       'to': toUserId,
       'message': text,

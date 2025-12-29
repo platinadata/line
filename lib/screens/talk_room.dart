@@ -15,7 +15,7 @@ class TalkRoomScreen extends StatefulWidget {
 }
 
 class _TalkRoomScreenState extends State<TalkRoomScreen> {
-  late final String _roomId;
+  late final String _idMatching;
   final TextEditingController _textController = TextEditingController();
   late final FirebaseFirestore _db;
   late final MessageRepository _messageRepo;
@@ -23,7 +23,7 @@ class _TalkRoomScreenState extends State<TalkRoomScreen> {
   @override
   void initState() {
     super.initState();
-    _roomId = buildRoomId(1, widget.user.id);
+    _idMatching = buildIdMatching(1, widget.user.id);
     _db = FirebaseFirestore.instance;
     _messageRepo = MessageRepository(_db);
   }
@@ -43,7 +43,7 @@ class _TalkRoomScreenState extends State<TalkRoomScreen> {
           // メッセージ表示エリア
           Expanded(
             child: StreamBuilder<List<Message>>(
-              stream: _messageRepo.fetchMessages(_roomId),
+              stream: _messageRepo.fetchMessages(_idMatching),
               builder: (context, snapshot) {
                 if (!snapshot.hasData) {
                   return const Center(child: CircularProgressIndicator());
@@ -78,7 +78,7 @@ class _TalkRoomScreenState extends State<TalkRoomScreen> {
                     if (text.isEmpty) return;
                     try {
                       await _messageRepo.sendMessage(
-                        roomId: _roomId,
+                        idMatching: _idMatching,
                         fromUserId: 1,
                         toUserId: widget.user.id,
                         text: text,

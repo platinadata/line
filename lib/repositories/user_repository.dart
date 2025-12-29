@@ -15,10 +15,27 @@ class UserRepository {
   }
 
   // 友だちの情報を取得
-  Future<List<User>> fetchFriendsUsers(String myLoginId) async {
+  Future<List<User>> fetchFriendsUsers(int myId) async {
+    // matchingテーブルから友だち一覧を取得
+    final matchingSnap = await _db
+        .collection('matching')
+        .where('members', arrayContains: myId)
+        .get();
+    // 取得したデータから友だちのIDを取得
+    final myMatchingList = matchingSnap.docs
+        .map((doc) {
+          final members = (doc.data()['members'] as List<dynamic>?)
+              ?.cast<int?>();
+          if (members == null) return null;
+
+          return members.firstWhere((id) => id != myId, orElse: () => null);
+        })
+        .whereType<int>()
+        .toList();
+    // 友だちのIDをもとにusersテーブルから友だち一覧を取得
     final friendsSnap = await _db
         .collection('users')
-        .where('loginId', isNotEqualTo: myLoginId)
+        .where('id', whereIn: myMatchingList)
         .get();
     return friendsSnap.docs.map((doc) => User.fromMap(doc.data())).toList();
   }
