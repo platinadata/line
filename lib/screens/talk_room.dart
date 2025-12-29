@@ -2,13 +2,15 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:line/models/message.dart';
 import 'package:line/models/user.dart';
+import 'package:line/repositories/auth_repository.dart';
 import 'package:line/repositories/message_repository.dart';
 import 'package:line/utils/room_id.dart';
 import 'package:line/widgets/message_container.dart';
 
 class TalkRoomScreen extends StatefulWidget {
   final User user;
-  const TalkRoomScreen({super.key, required this.user});
+  final AuthRepository authRepo;
+  const TalkRoomScreen({super.key, required this.user, required this.authRepo});
 
   @override
   State<TalkRoomScreen> createState() => _TalkRoomScreenState();
@@ -76,15 +78,23 @@ class _TalkRoomScreenState extends State<TalkRoomScreen> {
                   onPressed: () async {
                     final text = _textController.text.trim();
                     if (text.isEmpty) return;
+                    final me = widget.authRepo.currentUser!;
                     try {
                       await _messageRepo.sendMessage(
                         idMatching: _idMatching,
-                        fromUserId: 1,
+                        fromUserId: me.id,
                         toUserId: widget.user.id,
                         text: text,
                       );
                       _textController.clear();
-                    } catch (e) {}
+                    } catch (e) {
+                      debugPrint('sendMessage error: $e');
+                      if (context.mounted) {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          const SnackBar(content: Text('送信に失敗しました')),
+                        );
+                      }
+                    }
                   },
                   child: const Text('送信'),
                 ),

@@ -1,10 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:line/models/user.dart';
+import 'package:line/repositories/auth_repository.dart';
 import 'package:line/screens/talk_room.dart';
 
 class TalkUserContainer extends StatelessWidget {
   final User user;
-  const TalkUserContainer({super.key, required this.user});
+  final AuthRepository authRepo;
+  const TalkUserContainer({
+    super.key,
+    required this.user,
+    required this.authRepo,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -14,7 +20,8 @@ class TalkUserContainer extends StatelessWidget {
         onTap: () {
           Navigator.of(context).push(
             MaterialPageRoute(
-              builder: ((context) => TalkRoomScreen(user: user)),
+              builder: ((context) =>
+                  TalkRoomScreen(user: user, authRepo: authRepo)),
             ),
           );
         },
