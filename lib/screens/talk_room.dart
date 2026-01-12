@@ -1,10 +1,10 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:line/models/matching.dart';
 import 'package:line/models/message.dart';
 import 'package:line/models/user.dart';
 import 'package:line/repositories/auth_repository.dart';
 import 'package:line/repositories/message_repository.dart';
-import 'package:line/utils/room_id.dart';
 import 'package:line/widgets/message_container.dart';
 
 class TalkRoomScreen extends StatefulWidget {
@@ -17,7 +17,7 @@ class TalkRoomScreen extends StatefulWidget {
 }
 
 class _TalkRoomScreenState extends State<TalkRoomScreen> {
-  late final String _idMatching;
+  late final Future<Matching> _matching;
   final TextEditingController _textController = TextEditingController();
   late final FirebaseFirestore _db;
   late final MessageRepository _messageRepo;
@@ -25,9 +25,12 @@ class _TalkRoomScreenState extends State<TalkRoomScreen> {
   @override
   void initState() {
     super.initState();
-    _idMatching = buildIdMatching(1, widget.user.id);
     _db = FirebaseFirestore.instance;
     _messageRepo = MessageRepository(_db);
+    _matching = _messageRepo.fetchMatching(
+      widget.authRepo.currentUser!.id,
+      widget.user.id,
+    );
   }
 
   @override
@@ -44,20 +47,34 @@ class _TalkRoomScreenState extends State<TalkRoomScreen> {
         children: [
           // メッセージ表示エリア
           Expanded(
-            child: StreamBuilder<List<Message>>(
-              stream: _messageRepo.fetchMessages(_idMatching),
-              builder: (context, snapshot) {
-                if (!snapshot.hasData) {
+            child: FutureBuilder<Matching>(
+              future: _matching,
+              builder: (context, matchingSnap) {
+                if (!matchingSnap.hasData) {
                   return const Center(child: CircularProgressIndicator());
                 }
-                final messages = snapshot.data!;
-                return ListView.builder(
-                  reverse: true,
-                  padding: EdgeInsets.only(
-                    top: MediaQuery.of(context).viewInsets.bottom + 80,
-                  ),
-                  itemCount: messages.length,
-                  itemBuilder: (_, i) => MessageContainer(message: messages[i]),
+
+                final matching = matchingSnap.data!;
+
+                return StreamBuilder<List<Message>>(
+                  stream: _messageRepo.fetchMessages(matching.id),
+                  builder: (context, snapshot) {
+                    if (!snapshot.hasData) {
+                      return const Center(child: CircularProgressIndicator());
+                    }
+                    final messages = snapshot.data!;
+                    return ListView.builder(
+                      reverse: true,
+                      padding: EdgeInsets.only(
+                        top: MediaQuery.of(context).viewInsets.bottom + 80,
+                      ),
+                      itemCount: messages.length,
+                      itemBuilder: (_, i) => MessageContainer(
+                        message: messages[i],
+                        currentUser: widget.authRepo.currentUser!,
+                      ),
+                    );
+                  },
                 );
               },
             ),
@@ -80,8 +97,9 @@ class _TalkRoomScreenState extends State<TalkRoomScreen> {
                     if (text.isEmpty) return;
                     final me = widget.authRepo.currentUser!;
                     try {
+                      final matching = await _matching;
                       await _messageRepo.sendMessage(
-                        idMatching: _idMatching,
+                        idMatching: matching.id,
                         fromUserId: me.id,
                         toUserId: widget.user.id,
                         text: text,

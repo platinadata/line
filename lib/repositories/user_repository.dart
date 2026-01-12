@@ -11,33 +11,35 @@ class UserRepository {
         .collection('users')
         .where('loginId', isEqualTo: myLoginId)
         .get();
-    return User.fromMap(mySnap.docs.first.data());
+    return User.fromDoc(mySnap.docs.first);
   }
 
   // 友だちの情報を取得
-  Future<List<User>> fetchFriendsUsers(int myId) async {
+  Future<List<User>> fetchFriendsUsers(String myDocId) async {
     // matchingテーブルから友だち一覧を取得
     final matchingSnap = await _db
         .collection('matching')
-        .where('members', arrayContains: myId)
+        .where('members', arrayContains: myDocId)
         .get();
     // 取得したデータから友だちのIDを取得
     final myMatchingList = matchingSnap.docs
         .map((doc) {
-          final members = (doc.data()['members'] as List<dynamic>?)
-              ?.cast<int?>();
-          if (members == null) return null;
-
-          return members.firstWhere((id) => id != myId, orElse: () => null);
+          final members = (doc.data()['members'] as List)
+              .whereType<String>()
+              .toList();
+          for (final id in members) {
+            if (id != myDocId) return id;
+          }
+          return null;
         })
-        .whereType<int>()
+        .whereType<String>()
         .toList();
     // 友だちのIDをもとにusersテーブルから友だち一覧を取得
     final friendsSnap = await _db
         .collection('users')
-        .where('id', whereIn: myMatchingList)
+        .where(FieldPath.documentId, whereIn: myMatchingList)
         .get();
-    return friendsSnap.docs.map((doc) => User.fromMap(doc.data())).toList();
+    return friendsSnap.docs.map((doc) => User.fromDoc(doc)).toList();
   }
 
   // 検索した友だちの情報を取得
@@ -50,8 +52,6 @@ class UserRepository {
         .startAt([q])
         .endAt(['$q\uf8ff'])
         .get();
-    return searchFriendsSnap.docs
-        .map((doc) => User.fromMap(doc.data()))
-        .toList();
+    return searchFriendsSnap.docs.map((doc) => User.fromDoc(doc)).toList();
   }
 }

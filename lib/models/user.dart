@@ -1,6 +1,8 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
+
 class User {
   // プロパティ
-  final int id;
+  final String id;
   final String loginId;
   final String name;
   final String? mail;
@@ -17,9 +19,10 @@ class User {
 
   static const _defaultIcon = 'https://picsum.photos/id/237/100/100';
 
-  factory User.fromMap(Map<String, dynamic> map) {
+  factory User.fromDoc(QueryDocumentSnapshot<Map<String, dynamic>> doc) {
+    final map = doc.data();
     return User(
-      id: map['id'] as int,
+      id: doc.id,
       loginId: map['loginId'] as String,
       name: map['name'] as String,
       mail: map['mail'] as String?,

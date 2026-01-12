@@ -1,16 +1,22 @@
 import 'package:flutter/material.dart';
 import 'package:line/models/message.dart';
+import 'package:line/models/user.dart';
 
 class MessageContainer extends StatelessWidget {
   final Message message;
-  const MessageContainer({super.key, required this.message});
+  final User currentUser;
+  const MessageContainer({
+    super.key,
+    required this.message,
+    required this.currentUser,
+  });
 
   @override
   Widget build(BuildContext context) {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 12),
       child: Align(
-        alignment: message.from == 1
+        alignment: message.from == currentUser.id
             ? Alignment.centerRight
             : Alignment.centerLeft,
         child: Container(

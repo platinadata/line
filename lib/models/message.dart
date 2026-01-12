@@ -4,8 +4,8 @@ class Message {
   // プロパティ
   final String id;
   final String idMatching;
-  final int from;
-  final int to;
+  final String from;
+  final String to;
   final String message;
   final Timestamp createdAt;
 
@@ -23,8 +23,8 @@ class Message {
     return Message(
       id: map['id'] as String,
       idMatching: map['idMatching'] as String,
-      from: map['from'] as int,
-      to: map['to'] as int,
+      from: map['from'] as String,
+      to: map['to'] as String,
       message: map['message'] as String,
       createdAt: map['createdAt'] as Timestamp,
     );
