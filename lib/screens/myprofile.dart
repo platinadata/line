@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:line/models/user.dart';
 import 'package:line/repositories/auth_repository.dart';
 import 'package:line/repositories/user_repository.dart';
+import 'package:line/screens/add_friends.dart';
 import 'package:line/widgets/myprofile_container.dart';
 import 'package:line/widgets/talkuser_container.dart';
 
@@ -39,6 +40,16 @@ class _MyProfileScreenState extends State<MyProfileScreen> {
       appBar: AppBar(title: const Text('ホーム')),
       body: ListView(
         children: [
+          ListTile(
+            trailing: const Icon(Icons.add_reaction_outlined),
+            onTap: () {
+              Navigator.of(context).push(
+                MaterialPageRoute(
+                  builder: ((context) => AddFriends(authRepo: widget.authRepo)),
+                ),
+              );
+            },
+          ),
           Column(children: [MyprofileContainer(my: widget.my)]),
           Padding(
             padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 24),
