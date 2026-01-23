@@ -1,21 +1,19 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:line/models/user.dart';
-import 'package:line/repositories/auth_repository.dart';
+import 'package:line/auth/auth_repository.dart';
 import 'package:line/repositories/user_repository.dart';
 import 'package:line/screens/add_friends.dart';
 import 'package:line/widgets/myprofile_container.dart';
 import 'package:line/widgets/talkuser_container.dart';
 
 class MyProfileScreen extends StatefulWidget {
-  final User my;
-  final List<User> users;
   final AuthRepository authRepo;
+  final List<User> users;
   const MyProfileScreen({
     super.key,
-    required this.my,
-    required this.users,
     required this.authRepo,
+    required this.users,
   });
 
   @override
@@ -50,7 +48,7 @@ class _MyProfileScreenState extends State<MyProfileScreen> {
               );
             },
           ),
-          Column(children: [MyprofileContainer(my: widget.my)]),
+          Column(children: [MyprofileContainer(authRepo: widget.authRepo)]),
           Padding(
             padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 24),
             child: TextField(

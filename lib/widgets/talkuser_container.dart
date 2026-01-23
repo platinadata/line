@@ -1,15 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:line/models/user.dart';
-import 'package:line/repositories/auth_repository.dart';
+import 'package:line/auth/auth_repository.dart';
 import 'package:line/screens/talk_room.dart';
 
 class TalkUserContainer extends StatelessWidget {
-  final User user;
   final AuthRepository authRepo;
+  final User user;
   const TalkUserContainer({
     super.key,
-    required this.user,
     required this.authRepo,
+    required this.user,
   });
 
   @override

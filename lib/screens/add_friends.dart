@@ -1,7 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:line/models/user.dart';
-import 'package:line/repositories/auth_repository.dart';
+import 'package:line/auth/auth_repository.dart';
 import 'package:line/repositories/user_repository.dart';
 import 'package:line/widgets/adduser_container.dart';
 

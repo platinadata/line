@@ -1,7 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:line/models/user.dart';
-import 'package:line/repositories/auth_repository.dart';
+import 'package:line/auth/auth_repository.dart';
 import 'package:line/repositories/user_repository.dart';
 import 'package:line/screens/myprofile.dart';
 import 'package:line/screens/myprofile_edit.dart';
@@ -39,7 +39,6 @@ class AppHomePage extends StatefulWidget {
 }
 
 class _AppHomePageState extends State<AppHomePage> {
-  User? _my;
   List<User> _friends = [];
   late final FirebaseFirestore _db;
   late final UserRepository _userRepo;
@@ -57,20 +56,21 @@ class _AppHomePageState extends State<AppHomePage> {
   Future<void> _loadUsers() async {
     const myLoginId = 'masahiro.517';
 
-    // 自分自身の情報を取得
-    final my = await _userRepo.fetchMyUser(myLoginId);
     // 認証管理リポジトリに自分自身の情報を格納
-    _authRepo.setCurrentUser(my);
+    _authRepo.setCurrentUser(await _userRepo.fetchMyUser(myLoginId));
 
     // 友だちの情報を取得
-    final friends = await _userRepo.fetchFriendsUsers(my.id);
+    final friends = await _userRepo.fetchFriendsUsers(
+      _authRepo.currentUser!.id,
+    );
 
+    if (!mounted) return;
     setState(() {
-      _my = my;
       _friends = friends;
     });
   }
 
+  // タブタップイベント
   int _selectedIndex = 0;
   void _onItemTapped(int index) {
     setState(() {
@@ -80,14 +80,14 @@ class _AppHomePageState extends State<AppHomePage> {
 
   @override
   Widget build(BuildContext context) {
-    if (_my == null) {
+    if (_authRepo.currentUser == null) {
       return const Scaffold(body: Center(child: CircularProgressIndicator()));
     }
 
     final screens = [
-      MyProfileScreen(my: _my!, users: _friends, authRepo: _authRepo),
-      TalkListScreen(users: _friends, authRepo: _authRepo),
-      MyProfileEdit(my: _my!),
+      MyProfileScreen(authRepo: _authRepo, users: _friends),
+      TalkListScreen(authRepo: _authRepo, users: _friends),
+      MyProfileEdit(authRepo: _authRepo),
     ];
 
     return Scaffold(

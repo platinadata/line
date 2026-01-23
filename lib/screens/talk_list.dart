@@ -1,15 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:line/models/user.dart';
-import 'package:line/repositories/auth_repository.dart';
+import 'package:line/auth/auth_repository.dart';
 import 'package:line/widgets/talkuser_container.dart';
 
 class TalkListScreen extends StatefulWidget {
-  final List<User> users;
   final AuthRepository authRepo;
+  final List<User> users;
   const TalkListScreen({
     super.key,
-    required this.users,
     required this.authRepo,
+    required this.users,
   });
 
   @override

@@ -1,17 +1,19 @@
 import 'package:flutter/material.dart';
-import 'package:line/models/user.dart';
+import 'package:line/auth/auth_repository.dart';
 import 'package:line/screens/myprofile_edit.dart';
 
 class MyprofileContainer extends StatelessWidget {
-  final User my;
-  const MyprofileContainer({super.key, required this.my});
+  final AuthRepository authRepo;
+  const MyprofileContainer({super.key, required this.authRepo});
 
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
       onTap: () {
         Navigator.of(context).push(
-          MaterialPageRoute(builder: ((context) => MyProfileEdit(my: my))),
+          MaterialPageRoute(
+            builder: ((context) => MyProfileEdit(authRepo: authRepo)),
+          ),
         );
       },
       child: Center(
@@ -30,7 +32,7 @@ class MyprofileContainer extends StatelessWidget {
                   Column(
                     children: [
                       Text(
-                        my.name,
+                        authRepo.currentUser!.name,
                         style: const TextStyle(
                           fontSize: 20,
                           fontWeight: FontWeight.bold,
@@ -42,7 +44,9 @@ class MyprofileContainer extends StatelessWidget {
                     children: [
                       CircleAvatar(
                         radius: 40,
-                        backgroundImage: NetworkImage(my.profileImageUrl),
+                        backgroundImage: NetworkImage(
+                          authRepo.currentUser!.profileImageUrl,
+                        ),
                       ),
                     ],
                   ),

@@ -1,10 +1,10 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
-import 'package:line/models/user.dart';
+import 'package:line/auth/auth_repository.dart';
 
 class MyProfileEdit extends StatefulWidget {
-  final User my;
-  const MyProfileEdit({super.key, required this.my});
+  final AuthRepository authRepo;
+  const MyProfileEdit({super.key, required this.authRepo});
 
   @override
   State<MyProfileEdit> createState() => _MyProfileEditScreenState();
@@ -17,8 +17,12 @@ class _MyProfileEditScreenState extends State<MyProfileEdit> {
   @override
   void initState() {
     super.initState();
-    _nameController = TextEditingController(text: widget.my.name);
-    _mailController = TextEditingController(text: widget.my.mail);
+    _nameController = TextEditingController(
+      text: widget.authRepo.currentUser!.name,
+    );
+    _mailController = TextEditingController(
+      text: widget.authRepo.currentUser!.mail,
+    );
   }
 
   @override
@@ -52,7 +56,7 @@ class _MyProfileEditScreenState extends State<MyProfileEdit> {
                   onPressed: () {
                     FirebaseFirestore.instance
                         .collection('users')
-                        .doc('user1')
+                        .doc(widget.authRepo.currentUser!.id)
                         .update({
                           'name': _nameController.text,
                           'mail': _mailController.text,

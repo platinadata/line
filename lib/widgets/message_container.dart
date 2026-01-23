@@ -1,14 +1,14 @@
 import 'package:flutter/material.dart';
+import 'package:line/auth/auth_repository.dart';
 import 'package:line/models/message.dart';
-import 'package:line/models/user.dart';
 
 class MessageContainer extends StatelessWidget {
   final Message message;
-  final User currentUser;
+  final AuthRepository authRepo;
   const MessageContainer({
     super.key,
     required this.message,
-    required this.currentUser,
+    required this.authRepo,
   });
 
   @override
@@ -16,14 +16,16 @@ class MessageContainer extends StatelessWidget {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 12),
       child: Align(
-        alignment: message.from == currentUser.id
+        alignment: message.from == authRepo.currentUser!.id
             ? Alignment.centerRight
             : Alignment.centerLeft,
         child: Container(
           padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 24),
-          decoration: const BoxDecoration(
-            color: Color(0xFFe6e6fa),
-            borderRadius: BorderRadius.all(Radius.circular(24)),
+          decoration: BoxDecoration(
+            color: message.from == authRepo.currentUser!.id
+                ? Color.lerp(const Color(0xFF55C500), Colors.white, 0.3)!
+                : Color(0xFFe6e6fa),
+            borderRadius: BorderRadius.all(Radius.circular(14)),
           ),
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,

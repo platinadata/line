@@ -8,8 +8,4 @@ class AuthRepository {
   void setCurrentUser(User user) {
     _currentUser = user;
   }
-
-  void clear() {
-    _currentUser = null;
-  }
 }

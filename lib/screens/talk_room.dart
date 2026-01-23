@@ -1,9 +1,8 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
-import 'package:line/models/matching.dart';
 import 'package:line/models/message.dart';
 import 'package:line/models/user.dart';
-import 'package:line/repositories/auth_repository.dart';
+import 'package:line/auth/auth_repository.dart';
 import 'package:line/repositories/message_repository.dart';
 import 'package:line/widgets/message_container.dart';
 
@@ -17,20 +16,20 @@ class TalkRoomScreen extends StatefulWidget {
 }
 
 class _TalkRoomScreenState extends State<TalkRoomScreen> {
-  late final Future<Matching> _matching;
+  late final String _idMatching;
   final TextEditingController _textController = TextEditingController();
   late final FirebaseFirestore _db;
   late final MessageRepository _messageRepo;
+  late final Stream<List<Message>> _messagesStream;
 
   @override
   void initState() {
     super.initState();
     _db = FirebaseFirestore.instance;
     _messageRepo = MessageRepository(_db);
-    _matching = _messageRepo.fetchMatching(
-      widget.authRepo.currentUser!.id,
-      widget.user.id,
-    );
+    final ids = [widget.authRepo.currentUser!.id, widget.user.id]..sort();
+    _idMatching = '${ids[0]}_${ids[1]}';
+    _messagesStream = _messageRepo.fetchMessages(_idMatching);
   }
 
   @override
@@ -47,34 +46,23 @@ class _TalkRoomScreenState extends State<TalkRoomScreen> {
         children: [
           // メッセージ表示エリア
           Expanded(
-            child: FutureBuilder<Matching>(
-              future: _matching,
-              builder: (context, matchingSnap) {
-                if (!matchingSnap.hasData) {
+            child: StreamBuilder<List<Message>>(
+              stream: _messagesStream,
+              builder: (context, snapshot) {
+                if (!snapshot.hasData) {
                   return const Center(child: CircularProgressIndicator());
                 }
-
-                final matching = matchingSnap.data!;
-
-                return StreamBuilder<List<Message>>(
-                  stream: _messageRepo.fetchMessages(matching.id),
-                  builder: (context, snapshot) {
-                    if (!snapshot.hasData) {
-                      return const Center(child: CircularProgressIndicator());
-                    }
-                    final messages = snapshot.data!;
-                    return ListView.builder(
-                      reverse: true,
-                      padding: EdgeInsets.only(
-                        top: MediaQuery.of(context).viewInsets.bottom + 80,
-                      ),
-                      itemCount: messages.length,
-                      itemBuilder: (_, i) => MessageContainer(
-                        message: messages[i],
-                        currentUser: widget.authRepo.currentUser!,
-                      ),
-                    );
-                  },
+                final messages = snapshot.data!;
+                return ListView.builder(
+                  reverse: true,
+                  padding: EdgeInsets.only(
+                    top: MediaQuery.of(context).viewInsets.bottom + 80,
+                  ),
+                  itemCount: messages.length,
+                  itemBuilder: (_, i) => MessageContainer(
+                    message: messages[i],
+                    authRepo: widget.authRepo,
+                  ),
                 );
               },
             ),
@@ -95,18 +83,15 @@ class _TalkRoomScreenState extends State<TalkRoomScreen> {
                   onPressed: () async {
                     final text = _textController.text.trim();
                     if (text.isEmpty) return;
-                    final me = widget.authRepo.currentUser!;
                     try {
-                      final matching = await _matching;
                       await _messageRepo.sendMessage(
-                        idMatching: matching.id,
-                        fromUserId: me.id,
+                        idMatching: _idMatching,
+                        fromUserId: widget.authRepo.currentUser!.id,
                         toUserId: widget.user.id,
                         text: text,
                       );
                       _textController.clear();
                     } catch (e) {
-                      debugPrint('sendMessage error: $e');
                       if (context.mounted) {
                         ScaffoldMessenger.of(context).showSnackBar(
                           const SnackBar(content: Text('送信に失敗しました')),
