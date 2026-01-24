@@ -60,6 +60,7 @@ class _TalkRoomScreenState extends State<TalkRoomScreen> {
                   ),
                   itemCount: messages.length,
                   itemBuilder: (_, i) => MessageContainer(
+                    icon: widget.user.profileImageUrl,
                     message: messages[i],
                     authRepo: widget.authRepo,
                   ),
@@ -69,7 +70,7 @@ class _TalkRoomScreenState extends State<TalkRoomScreen> {
           ),
           // メッセージを入力＆送信エリア
           FractionallySizedBox(
-            widthFactor: 0.8,
+            widthFactor: 0.9,
             child: Row(
               children: [
                 Expanded(
@@ -78,7 +79,7 @@ class _TalkRoomScreenState extends State<TalkRoomScreen> {
                     decoration: const InputDecoration(hintText: 'メッセージを入力'),
                   ),
                 ),
-                const SizedBox(width: 16),
+                const SizedBox(width: 8),
                 ElevatedButton(
                   onPressed: () async {
                     final text = _textController.text.trim();
@@ -99,7 +100,13 @@ class _TalkRoomScreenState extends State<TalkRoomScreen> {
                       }
                     }
                   },
-                  child: const Text('送信'),
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Colors.transparent,
+                    shadowColor: Colors.transparent,
+                    elevation: 0,
+                    padding: EdgeInsets.zero,
+                  ),
+                  child: const Icon(Icons.send, size: 32),
                 ),
               ],
             ),
