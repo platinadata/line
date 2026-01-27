@@ -1,10 +1,16 @@
 import 'package:flutter/material.dart';
+import 'package:line/models/user.dart';
 import 'package:line/auth/auth_repository.dart';
-import 'package:line/screens/myprofile_edit.dart';
+import 'package:line/screens/talk_room.dart';
 
-class MyprofileContainer extends StatelessWidget {
+class MyFriendUserContainer extends StatelessWidget {
   final AuthRepository authRepo;
-  const MyprofileContainer({super.key, required this.authRepo});
+  final User user;
+  const MyFriendUserContainer({
+    super.key,
+    required this.authRepo,
+    required this.user,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -14,7 +20,8 @@ class MyprofileContainer extends StatelessWidget {
         onTap: () {
           Navigator.of(context).push(
             MaterialPageRoute(
-              builder: ((context) => MyProfileEdit(authRepo: authRepo)),
+              builder: ((context) =>
+                  TalkRoomScreen(user: user, authRepo: authRepo)),
             ),
           );
         },
@@ -28,20 +35,17 @@ class MyprofileContainer extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    Text(
-                      authRepo.currentUser!.name,
-                      style: const TextStyle(
-                        fontSize: 20,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
                     CircleAvatar(
-                      radius: 40,
-                      backgroundImage: NetworkImage(
-                        authRepo.currentUser!.profileImageUrl,
-                      ),
+                      radius: 24,
+                      backgroundImage: NetworkImage(user.profileImageUrl),
+                    ),
+                    const SizedBox(width: 16),
+                    Text(
+                      user.name,
+                      maxLines: 2,
+                      overflow: TextOverflow.ellipsis,
+                      style: const TextStyle(fontSize: 16),
                     ),
                   ],
                 ),

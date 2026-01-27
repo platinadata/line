@@ -29,6 +29,21 @@ class MessageRepository {
         );
   }
 
+  // 最後のメッセージを取得
+  Future<Message?> fetchLastMessage(String idMatching) async {
+    final snap = await _db
+        .collection('messages')
+        .where('idMatching', isEqualTo: idMatching)
+        .orderBy('createdAt', descending: true)
+        .limit(1)
+        .get();
+
+    if (snap.docs.isEmpty) return null;
+
+    final data = snap.docs.first.data();
+    return Message.fromMap(data);
+  }
+
   // メッセージを送信
   Future<void> sendMessage({
     required String idMatching,

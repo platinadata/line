@@ -4,8 +4,8 @@ import 'package:line/models/user.dart';
 import 'package:line/auth/auth_repository.dart';
 import 'package:line/repositories/user_repository.dart';
 import 'package:line/screens/add_friends.dart';
+import 'package:line/widgets/myfrienduser_container.dart';
 import 'package:line/widgets/myprofile_container.dart';
-import 'package:line/widgets/talkuser_container.dart';
 
 class MyProfileScreen extends StatefulWidget {
   final AuthRepository authRepo;
@@ -71,7 +71,8 @@ class _MyProfileScreenState extends State<MyProfileScreen> {
             ),
           ),
           ..._filteredUsers.map(
-            (user) => TalkUserContainer(user: user, authRepo: widget.authRepo),
+            (user) =>
+                MyFriendUserContainer(user: user, authRepo: widget.authRepo),
           ),
         ],
       ),
