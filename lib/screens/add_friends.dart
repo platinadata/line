@@ -10,10 +10,10 @@ class AddFriends extends StatefulWidget {
   const AddFriends({super.key, required this.authRepo});
 
   @override
-  State<AddFriends> createState() => _MyProfileEditScreenState();
+  State<AddFriends> createState() => _AddFriendsScreenState();
 }
 
-class _MyProfileEditScreenState extends State<AddFriends> {
+class _AddFriendsScreenState extends State<AddFriends> {
   List<User>? _notAddUsers;
   late final FirebaseFirestore _db;
   late final UserRepository _userRepo;
@@ -27,7 +27,7 @@ class _MyProfileEditScreenState extends State<AddFriends> {
   }
 
   Future<void> _loadUsers() async {
-    // 友だちの情報を取得
+    // 友だちかもしれないユーザーの情報を取得
     final notAddUsers = await _userRepo.fetchNotFriendsUsers(
       widget.authRepo.currentUser!.id,
     );
@@ -45,26 +45,21 @@ class _MyProfileEditScreenState extends State<AddFriends> {
       return const Scaffold(body: Center(child: CircularProgressIndicator()));
     }
 
-    if (users.isEmpty) {
-      return Scaffold(
-        appBar: AppBar(title: const Text('友だちかも')),
-        body: const Center(child: Text('現在友だちかもしれないユーザーはいません')),
-      );
-    }
-
     return Scaffold(
       appBar: AppBar(title: const Text('友だちかも')),
-      body: ListView.builder(
-        padding: const EdgeInsets.only(top: 40),
-        itemCount: users.length,
-        itemBuilder: (context, index) {
-          return AddUserContainer(
-            user: users[index],
-            authRepo: widget.authRepo,
-            userRepo: _userRepo,
-          );
-        },
-      ),
+      body: users.isEmpty
+          ? const Center(child: Text('現在友だちかもしれないユーザーはいません'))
+          : ListView.builder(
+              padding: const EdgeInsets.only(top: 40),
+              itemCount: users.length,
+              itemBuilder: (context, index) {
+                return AddUserContainer(
+                  user: users[index],
+                  authRepo: widget.authRepo,
+                  userRepo: _userRepo,
+                );
+              },
+            ),
     );
   }
 }

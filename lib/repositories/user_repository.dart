@@ -71,6 +71,59 @@ class UserRepository {
     return searchFriendsSnap.docs.map((doc) => User.fromDoc(doc)).toList();
   }
 
+  // 検索ページで検索したユーザーの情報を取得
+  Future<User?> fetchFindUser(String userCode) async {
+    final q = userCode.trim();
+    if (q.isEmpty) return null;
+    final searchFriendsSnap = await _db
+        .collection('users')
+        .orderBy('name')
+        .startAt([q])
+        .endAt(['$q\uf8ff'])
+        .get();
+    return User.fromDoc(searchFriendsSnap.docs.first);
+  }
+
+  // 検索ページからユーザーを追加
+  Future<void> createMatching(String myDocId, String userDocId) async {
+    final ids = [myDocId, userDocId]..sort();
+    final idMatching = '${ids[0]}_${ids[1]}';
+    final ref = _db.collection('matching').doc(idMatching);
+
+    await _db.runTransaction((transaction) async {
+      final snap = await transaction.get(ref);
+      final data = snap.data();
+
+      List<bool> add;
+      List<String> members;
+
+      if (data == null) {
+        // 新規作成
+        if (ids[0] == myDocId) {
+          add = [true, false];
+          members = [myDocId, userDocId];
+        } else {
+          add = [false, true];
+          members = [userDocId, myDocId];
+        }
+      } else {
+        // 既存データの更新
+        add = (data['add'] as List).map((e) => e as bool).toList();
+        members = (data['members'] as List).map((e) => e as String).toList();
+        if (ids[0] == myDocId) {
+          add[0] = true;
+        } else {
+          add[1] = true;
+        }
+      }
+
+      transaction.set(ref, {
+        'add': add,
+        'members': members,
+      }, SetOptions(merge: true));
+    });
+  }
+
   // 友だちかもの情報を取得
   Future<List<User>> fetchNotFriendsUsers(String myDocId) async {
     // matchingテーブルから自分が関与している友だち一覧を取得
@@ -93,7 +146,7 @@ class UserRepository {
           // 自分が追加しているならスキップ
           if (add[myIndex] == true) return null;
 
-          // 友だちかものIDを返す
+          // 友だちかもしれないのでIDを返す
           for (var i = 0; i < members.length; i++) {
             if (members[i] != myDocId) return members[i];
           }
