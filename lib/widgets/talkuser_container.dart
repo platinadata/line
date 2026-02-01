@@ -21,7 +21,6 @@ class TalkUserContainer extends StatefulWidget {
 }
 
 class _TalkUserContainerState extends State<TalkUserContainer> {
-  late final String _idMatching;
   Message? _lastMessage;
   late final FirebaseFirestore _db;
   late final MessageRepository _messageRepo;
@@ -31,15 +30,14 @@ class _TalkUserContainerState extends State<TalkUserContainer> {
     super.initState();
     _db = FirebaseFirestore.instance;
     _messageRepo = MessageRepository(_db);
-
-    final ids = [widget.authRepo.currentUser!.id, widget.user.id]..sort();
-    _idMatching = '${ids[0]}_${ids[1]}';
-
     _loadLastMessage();
   }
 
   Future<void> _loadLastMessage() async {
-    Message? lastMessage = await _messageRepo.fetchLastMessage(_idMatching);
+    Message? lastMessage = await _messageRepo.fetchLastMessage(
+      widget.authRepo.currentUser!.id,
+      widget.user.id,
+    );
     if (!mounted) return;
     setState(() {
       _lastMessage = lastMessage;

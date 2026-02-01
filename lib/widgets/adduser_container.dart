@@ -41,7 +41,7 @@ class AddUserContainer extends StatelessWidget {
               IconButton(
                 icon: const Icon(Icons.add_reaction_outlined),
                 onPressed: () async {
-                  await userRepo.updateAddFlags(
+                  await userRepo.setBothUsersAdded(
                     authRepo.currentUser!.id,
                     user.id,
                   );

@@ -41,7 +41,7 @@ class FindUserContainer extends StatelessWidget {
               IconButton(
                 icon: const Icon(Icons.add_reaction_outlined),
                 onPressed: () async {
-                  await userRepo.createMatching(
+                  await userRepo.upsertMatching(
                     authRepo.currentUser!.id,
                     user.id,
                   );

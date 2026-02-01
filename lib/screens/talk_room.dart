@@ -16,7 +16,6 @@ class TalkRoomScreen extends StatefulWidget {
 }
 
 class _TalkRoomScreenState extends State<TalkRoomScreen> {
-  late final String _idMatching;
   final TextEditingController _textController = TextEditingController();
   late final FirebaseFirestore _db;
   late final MessageRepository _messageRepo;
@@ -27,9 +26,10 @@ class _TalkRoomScreenState extends State<TalkRoomScreen> {
     super.initState();
     _db = FirebaseFirestore.instance;
     _messageRepo = MessageRepository(_db);
-    final ids = [widget.authRepo.currentUser!.id, widget.user.id]..sort();
-    _idMatching = '${ids[0]}_${ids[1]}';
-    _messagesStream = _messageRepo.fetchMessages(_idMatching);
+    _messagesStream = _messageRepo.fetchMessages(
+      widget.authRepo.currentUser!.id,
+      widget.user.id,
+    );
   }
 
   @override
@@ -46,26 +46,29 @@ class _TalkRoomScreenState extends State<TalkRoomScreen> {
         children: [
           // メッセージ表示エリア
           Expanded(
-            child: StreamBuilder<List<Message>>(
-              stream: _messagesStream,
-              builder: (context, snapshot) {
-                if (!snapshot.hasData) {
-                  return const Center(child: CircularProgressIndicator());
-                }
-                final messages = snapshot.data!;
-                return ListView.builder(
-                  reverse: true,
-                  padding: EdgeInsets.only(
-                    top: MediaQuery.of(context).viewInsets.bottom + 80,
-                  ),
-                  itemCount: messages.length,
-                  itemBuilder: (_, i) => MessageContainer(
-                    icon: widget.user.profileImageUrl,
-                    message: messages[i],
-                    authRepo: widget.authRepo,
-                  ),
-                );
-              },
+            child: Container(
+              color: Colors.grey[200],
+              child: StreamBuilder<List<Message>>(
+                stream: _messagesStream,
+                builder: (context, snapshot) {
+                  if (!snapshot.hasData) {
+                    return const Center(child: CircularProgressIndicator());
+                  }
+                  final messages = snapshot.data!;
+                  return ListView.builder(
+                    reverse: true,
+                    padding: EdgeInsets.only(
+                      top: MediaQuery.of(context).viewInsets.bottom + 80,
+                    ),
+                    itemCount: messages.length,
+                    itemBuilder: (_, i) => MessageContainer(
+                      icon: widget.user.profileImageUrl,
+                      message: messages[i],
+                      authRepo: widget.authRepo,
+                    ),
+                  );
+                },
+              ),
             ),
           ),
           // メッセージを入力＆送信エリア
@@ -74,39 +77,69 @@ class _TalkRoomScreenState extends State<TalkRoomScreen> {
             child: Row(
               children: [
                 Expanded(
-                  child: TextField(
-                    controller: _textController,
-                    decoration: const InputDecoration(hintText: 'メッセージを入力'),
+                  child: Container(
+                    margin: EdgeInsets.only(top: 16),
+                    child: TextField(
+                      controller: _textController,
+                      decoration: InputDecoration(
+                        hintText: 'メッセージを入力',
+                        filled: true,
+                        fillColor: Colors.white,
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(20),
+                          borderSide: BorderSide(
+                            color: Colors.grey[300]!,
+                            width: 1,
+                          ),
+                        ),
+                        enabledBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(20),
+                          borderSide: BorderSide(
+                            color: Colors.grey[300]!,
+                            width: 1,
+                          ),
+                        ),
+                        focusedBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(20),
+                          borderSide: BorderSide(color: Colors.blue, width: 2),
+                        ),
+                        contentPadding: EdgeInsets.symmetric(
+                          horizontal: 20,
+                          vertical: 12,
+                        ),
+                      ),
+                    ),
                   ),
                 ),
-                const SizedBox(width: 8),
-                ElevatedButton(
-                  onPressed: () async {
-                    final text = _textController.text.trim();
-                    if (text.isEmpty) return;
-                    try {
-                      await _messageRepo.sendMessage(
-                        idMatching: _idMatching,
-                        fromUserId: widget.authRepo.currentUser!.id,
-                        toUserId: widget.user.id,
-                        text: text,
-                      );
-                      _textController.clear();
-                    } catch (e) {
-                      if (context.mounted) {
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          const SnackBar(content: Text('送信に失敗しました')),
+                Container(
+                  margin: EdgeInsets.only(top: 16),
+                  child: ElevatedButton(
+                    onPressed: () async {
+                      final text = _textController.text.trim();
+                      if (text.isEmpty) return;
+                      try {
+                        await _messageRepo.sendMessage(
+                          fromUserId: widget.authRepo.currentUser!.id,
+                          toUserId: widget.user.id,
+                          text: text,
                         );
+                        _textController.clear();
+                      } catch (e) {
+                        if (context.mounted) {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            const SnackBar(content: Text('送信に失敗しました')),
+                          );
+                        }
                       }
-                    }
-                  },
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.transparent,
-                    shadowColor: Colors.transparent,
-                    elevation: 0,
-                    padding: EdgeInsets.zero,
+                    },
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: Colors.transparent,
+                      shadowColor: Colors.transparent,
+                      elevation: 0,
+                      padding: EdgeInsets.zero,
+                    ),
+                    child: const Icon(Icons.send, size: 32),
                   ),
-                  child: const Icon(Icons.send, size: 32),
                 ),
               ],
             ),

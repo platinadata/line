@@ -1,11 +1,17 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:line/models/user.dart';
+import 'package:line/utils/id_generator.dart';
 
 class UserRepository {
   final FirebaseFirestore _db;
   UserRepository(this._db);
 
+  // =====================================================
+  // ホームページ
+  // =====================================================
+
   // 自分自身の情報を取得
+  // ロード時に実行
   Future<User> fetchMyUser(String myLoginId) async {
     final mySnap = await _db
         .collection('users')
@@ -15,6 +21,7 @@ class UserRepository {
   }
 
   // 友だちの情報を取得
+  // ロード時に実行
   Future<List<User>> fetchFriendsUsers(String myDocId) async {
     // matchingテーブルから自分が関与している友だち一覧を取得
     final matchingSnap = await _db
@@ -58,7 +65,8 @@ class UserRepository {
     return friendsSnap.docs.map((doc) => User.fromDoc(doc)).toList();
   }
 
-  // 検索した友だちの情報を取得
+  // ユーザー名検索（部分一致）
+  // Enterボタンクリック時に実行
   Future<List<User>> fetchSearchFriendsUsers(String keyword) async {
     final q = keyword.trim();
     if (q.isEmpty) return [];
@@ -71,60 +79,12 @@ class UserRepository {
     return searchFriendsSnap.docs.map((doc) => User.fromDoc(doc)).toList();
   }
 
-  // 検索ページで検索したユーザーの情報を取得
-  Future<User?> fetchFindUser(String userCode) async {
-    final q = userCode.trim();
-    if (q.isEmpty) return null;
-    final searchFriendsSnap = await _db
-        .collection('users')
-        .orderBy('name')
-        .startAt([q])
-        .endAt(['$q\uf8ff'])
-        .get();
-    return User.fromDoc(searchFriendsSnap.docs.first);
-  }
-
-  // 検索ページからユーザーを追加
-  Future<void> createMatching(String myDocId, String userDocId) async {
-    final ids = [myDocId, userDocId]..sort();
-    final idMatching = '${ids[0]}_${ids[1]}';
-    final ref = _db.collection('matching').doc(idMatching);
-
-    await _db.runTransaction((transaction) async {
-      final snap = await transaction.get(ref);
-      final data = snap.data();
-
-      List<bool> add;
-      List<String> members;
-
-      if (data == null) {
-        // 新規作成
-        if (ids[0] == myDocId) {
-          add = [true, false];
-          members = [myDocId, userDocId];
-        } else {
-          add = [false, true];
-          members = [userDocId, myDocId];
-        }
-      } else {
-        // 既存データの更新
-        add = (data['add'] as List).map((e) => e as bool).toList();
-        members = (data['members'] as List).map((e) => e as String).toList();
-        if (ids[0] == myDocId) {
-          add[0] = true;
-        } else {
-          add[1] = true;
-        }
-      }
-
-      transaction.set(ref, {
-        'add': add,
-        'members': members,
-      }, SetOptions(merge: true));
-    });
-  }
+  // =====================================================
+  // 友達かもページ
+  // =====================================================
 
   // 友だちかもの情報を取得
+  // ロード時に実行
   Future<List<User>> fetchNotFriendsUsers(String myDocId) async {
     // matchingテーブルから自分が関与している友だち一覧を取得
     final matchingSnap = await _db
@@ -168,22 +128,94 @@ class UserRepository {
     return friendsSnap.docs.map((doc) => User.fromDoc(doc)).toList();
   }
 
-  // 友だちかものユーザーを追加する
-  Future<void> updateAddFlags(String a, String b) async {
-    final ids = [a, b]..sort();
-    final idMatching = '${ids[0]}_${ids[1]}';
+  // 友達追加
+  // 追加ボタンクリック時に実行
+  Future<void> setBothUsersAdded(String myDocId, String userDocId) async {
+    final idMatching = generateMatchingId(myDocId, userDocId);
     final ref = _db.collection('matching').doc(idMatching);
 
     final snap = await ref.get();
     final data = snap.data();
     if (data == null) return;
 
+    final addFlags = (data['add'] as List).map((e) => e as bool).toList();
+
+    while (addFlags.length < 2) addFlags.add(false);
+    addFlags[0] = true;
+    addFlags[1] = true;
+
+    await ref.update({'add': addFlags});
+  }
+
+  // =====================================================
+  // 検索ページ
+  // =====================================================
+
+  // ユーザーコード検索（完全一致）
+  // Enterボタンクリック時に実行
+  Future<User?> fetchFindUser(String userCode) async {
+    final q = userCode.trim();
+    if (q.isEmpty) return null;
+    final searchFriendsSnap = await _db
+        .collection('users')
+        .where('userCode', isEqualTo: q)
+        .limit(1)
+        .get();
+    if (searchFriendsSnap.docs.isEmpty) return null;
+    return User.fromDoc(searchFriendsSnap.docs.first);
+  }
+
+  // 友達追加
+  // 追加ボタンクリック時に実行
+  Future<void> upsertMatching(String myDocId, String userDocId) async {
+    final idMatching = generateMatchingId(myDocId, userDocId);
+    final ref = _db.collection('matching').doc(idMatching);
+
+    await _db.runTransaction((transaction) async {
+      final snap = await transaction.get(ref);
+      final data = snap.data();
+
+      final matchingData = data == null
+          ? _createNewMatchingData(myDocId, userDocId)
+          : _updateExistingMatchingData(data, myDocId, userDocId);
+
+      transaction.set(ref, matchingData, SetOptions(merge: true));
+    });
+  }
+
+  // =====================================================
+  // ヘルパー
+  // =====================================================
+
+  // createMatchingのヘルパー
+  // 新規マッチングデータを作成
+  Map<String, dynamic> _createNewMatchingData(
+    String myDocId,
+    String userDocId,
+  ) {
+    final ids = [myDocId, userDocId]..sort();
+    final isMyIdFirst = ids[0] == myDocId;
+
+    return {
+      'add': isMyIdFirst ? [true, false] : [false, true],
+      'members': isMyIdFirst ? [myDocId, userDocId] : [userDocId, myDocId],
+    };
+  }
+
+  // createMatchingのヘルパー
+  // 既存マッチングデータを更新
+  Map<String, dynamic> _updateExistingMatchingData(
+    Map<String, dynamic> data,
+    String myDocId,
+    String userDocId,
+  ) {
+    final ids = [myDocId, userDocId]..sort();
     final add = (data['add'] as List).map((e) => e as bool).toList();
+    final members = (data['members'] as List).map((e) => e as String).toList();
 
-    while (add.length < 2) add.add(false);
-    add[0] = true;
-    add[1] = true;
+    final myIndex = ids[0] == myDocId ? 0 : 1;
+    add[myIndex] = true;
 
-    await ref.update({'add': add});
+    return {'add': add, 'members': members};
   }
 }
