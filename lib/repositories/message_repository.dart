@@ -34,7 +34,7 @@ class MessageRepository {
     return _db
         .collection('messages')
         .where('idMatching', isEqualTo: generateMatchingId(myDocId, userDocId))
-        .orderBy('createdAt', descending: true)
+        .orderBy('createdAt', descending: false)
         .snapshots()
         .map(
           (snap) =>

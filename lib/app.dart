@@ -54,7 +54,7 @@ class _AppHomePageState extends State<AppHomePage> {
   }
 
   Future<void> _loadUsers() async {
-    const myLoginId = 'masahiro.517';
+    const myLoginId = 'kumanomi.123';
 
     // 認証管理リポジトリに自分自身の情報を格納
     _authRepo.setCurrentUser(await _userRepo.fetchMyUser(myLoginId));

@@ -16,6 +16,7 @@ class TalkRoomScreen extends StatefulWidget {
 }
 
 class _TalkRoomScreenState extends State<TalkRoomScreen> {
+  final ScrollController _scrollController = ScrollController();
   final TextEditingController _textController = TextEditingController();
   late final FirebaseFirestore _db;
   late final MessageRepository _messageRepo;
@@ -34,6 +35,7 @@ class _TalkRoomScreenState extends State<TalkRoomScreen> {
 
   @override
   void dispose() {
+    _scrollController.dispose();
     _textController.dispose();
     super.dispose();
   }
@@ -55,11 +57,17 @@ class _TalkRoomScreenState extends State<TalkRoomScreen> {
                     return const Center(child: CircularProgressIndicator());
                   }
                   final messages = snapshot.data!;
+                  // メッセージ更新後に最下部へスクロール
+                  WidgetsBinding.instance.addPostFrameCallback((_) {
+                    if (_scrollController.hasClients) {
+                      _scrollController.jumpTo(
+                        _scrollController.position.maxScrollExtent,
+                      );
+                    }
+                  });
                   return ListView.builder(
-                    reverse: true,
-                    padding: EdgeInsets.only(
-                      top: MediaQuery.of(context).viewInsets.bottom + 80,
-                    ),
+                    controller: _scrollController,
+                    padding: const EdgeInsets.all(8.0),
                     itemCount: messages.length,
                     itemBuilder: (_, i) => MessageContainer(
                       icon: widget.user.profileImageUrl,
