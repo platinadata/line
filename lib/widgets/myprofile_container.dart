@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:line/auth/auth_repository.dart';
-import 'package:line/screens/myprofile_edit.dart';
+import 'package:line/screens/myprofile_edit_form.dart';
 
 class MyprofileContainer extends StatelessWidget {
   final AuthRepository authRepo;
@@ -14,7 +14,7 @@ class MyprofileContainer extends StatelessWidget {
         onTap: () {
           Navigator.of(context).push(
             MaterialPageRoute(
-              builder: ((context) => MyProfileEdit(authRepo: authRepo)),
+              builder: ((context) => MyProfileEditForm(authRepo: authRepo)),
             ),
           );
         },

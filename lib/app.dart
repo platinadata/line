@@ -4,7 +4,7 @@ import 'package:line/models/user.dart';
 import 'package:line/auth/auth_repository.dart';
 import 'package:line/repositories/user_repository.dart';
 import 'package:line/screens/myprofile.dart';
-import 'package:line/screens/myprofile_edit.dart';
+import 'package:line/screens/myprofile_edit_form.dart';
 import 'package:line/screens/talk_list.dart';
 
 class MyApp extends StatelessWidget {
@@ -87,7 +87,7 @@ class _AppHomePageState extends State<AppHomePage> {
     final screens = [
       MyProfileScreen(authRepo: _authRepo, users: _friends),
       TalkListScreen(authRepo: _authRepo, users: _friends),
-      MyProfileEdit(authRepo: _authRepo),
+      MyProfileEditForm(authRepo: _authRepo),
     ];
 
     return Scaffold(

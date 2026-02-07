@@ -218,4 +218,23 @@ class UserRepository {
 
     return {'add': add, 'members': members};
   }
+
+  // =====================================================
+  // プロフィールを編集ページ
+  // =====================================================
+
+  // 自分自身のプロフィールを編集
+  // 更新ボタンクリック時に実行
+  Future<void> editMyprofile(
+    String myDocId,
+    String myName,
+    String myMail,
+    String myuserCode,
+  ) async {
+    await _db.collection('users').doc(myDocId).update({
+      'name': myName,
+      'mail': myMail,
+      'userCode': myuserCode,
+    });
+  }
 }
