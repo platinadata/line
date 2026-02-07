@@ -13,6 +13,7 @@ class MyProfileEdit extends StatefulWidget {
 class _MyProfileEditScreenState extends State<MyProfileEdit> {
   late TextEditingController _nameController;
   late TextEditingController _mailController;
+  late TextEditingController _userCodeController;
 
   @override
   void initState() {
@@ -23,12 +24,16 @@ class _MyProfileEditScreenState extends State<MyProfileEdit> {
     _mailController = TextEditingController(
       text: widget.authRepo.currentUser!.mail,
     );
+    _userCodeController = TextEditingController(
+      text: widget.authRepo.currentUser!.userCode,
+    );
   }
 
   @override
   void dispose() {
     _nameController.dispose();
     _mailController.dispose();
+    _userCodeController.dispose();
     super.dispose();
   }
 
@@ -51,6 +56,10 @@ class _MyProfileEditScreenState extends State<MyProfileEdit> {
                   controller: _mailController,
                   decoration: InputDecoration(hintText: 'メールアドレス'),
                 ),
+                TextField(
+                  controller: _userCodeController,
+                  decoration: InputDecoration(hintText: '検索用コード'),
+                ),
                 const SizedBox(height: 32),
                 ElevatedButton(
                   onPressed: () {
@@ -60,6 +69,7 @@ class _MyProfileEditScreenState extends State<MyProfileEdit> {
                         .update({
                           'name': _nameController.text,
                           'mail': _mailController.text,
+                          'userCode': _userCodeController.text,
                         });
 
                     Navigator.of(
