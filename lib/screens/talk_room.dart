@@ -89,6 +89,8 @@ class _TalkRoomScreenState extends State<TalkRoomScreen> {
                     margin: EdgeInsets.only(top: 16),
                     child: TextField(
                       controller: _textController,
+                      maxLines: null,
+                      keyboardType: TextInputType.multiline,
                       decoration: InputDecoration(
                         hintText: 'メッセージを入力',
                         filled: true,
